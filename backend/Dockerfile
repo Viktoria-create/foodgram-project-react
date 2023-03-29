@@ -1,11 +1,20 @@
-FROM python:3.7-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY backend/requirements.txt ./
+RUN apt-get update && apt-get install --no-install-recommends --no-install-suggests -y \
+        libpango1.0-dev \
+        libglib2.0-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install -r requirements.txt --no-cache-dir
+COPY requirements.txt .
 
-COPY backend/ ./
+RUN pip install -r requirements.txt --no-cache-dir
 
-CMD ["gunicorn", "foodgram.wsgi:application", "--bind", "0.0.0.0:8000" ]
+COPY . .
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000" ]

@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install --no-install-recommends --no-install-sugge
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY backend/requirements.txt ./
 
 RUN pip install -r requirements.txt --no-cache-dir
 

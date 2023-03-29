@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ../frontend
+      context: ../ # frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/:rw
@@ -31,17 +31,17 @@ services:
     env_file:
       - ./.env
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   web:
     build:
-      context: ../backend
+      context: ../ # backend
       dockerfile: Dockerfile
       args:
-        - DJANGO_SECRET_KEY
+        - SECRET_KEY
     restart: always
     volumes:
       - static_value:/app/static/:rw

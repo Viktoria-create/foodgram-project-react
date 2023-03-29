@@ -6,20 +6,11 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-# SECRET_KEY = 'fet80w)=4=u8vwve+yjfxop*p_xmqz%q2p!&m#82r2_o&ptzqa'
+SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
 
 DEBUG = int(os.environ.get('DEBUG', default=0))
-# DEBUG = True
 
-# ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*'), '*']
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '[::1]',
-    'testserver',
-    ':80',
-]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*'), '*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -72,41 +63,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# DATABASES = {
-#    'default': {
-#        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-#        'NAME': os.getenv('DB_NAME', 'foodgram'),
-#       'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
-#        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'foodgram_password'),
-#        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-#        'PORT': os.getenv('DB_PORT', '5432')
-#    }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', 'foodgram'),
+        'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'foodgram_password'),
+        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+        'PORT': os.getenv('DB_PORT', '5432')
     }
 }
 
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-      'NAME':
-      'django.contrib.auth.password_validation.'
-      'UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+        'UserAttributeSimilarityValidator',
     },
     {
-      'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+        'MinimumLengthValidator',
     },
     {
-      'NAME':
-      'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+        'CommonPasswordValidator',
     },
     {
-      'NAME':
-      'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+        'NumericPasswordValidator',
     },
 ]
 

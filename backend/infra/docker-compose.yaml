@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ../ # frontend
+      context: ../ #frontend
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/:rw
@@ -38,7 +38,7 @@ services:
 
   web:
     build:
-      context: ../ # backend
+      context: ../ #backend
       dockerfile: Dockerfile
       args:
         - SECRET_KEY

@@ -1,4 +1,7 @@
 import os
+import secrets
+import string
+# from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -6,11 +9,17 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'secret_key')
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+if not SECRET_KEY:
+    SECRET_KEY = ''.join(secrets.choice(string.ascii_letters)
+                         for _ in range(50))
 
 DEBUG = int(os.environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*'), '*']
+# ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*'), '*']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS',
+                               default='84.201.163.106 localhost').split(" ")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -68,13 +77,15 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-        'NAME': os.getenv('DB_NAME', 'foodgram'),
-        'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'foodgram_password'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '5432')
+        'NAME': os.getenv('DB_NAME', default='postgres'),
+        'USER': os.getenv('POSTGRES_USER', default='postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
+        'HOST': os.getenv('DB_HOST', default='db'),
+        'PORT': os.getenv('DB_PORT', default='5432'),
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 AUTH_PASSWORD_VALIDATORS = [

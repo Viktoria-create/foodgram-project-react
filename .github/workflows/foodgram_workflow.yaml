@@ -69,7 +69,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker compose down
-          sudo docker compose rm backend frontend
+          sudo docker compose rm -f backend frontend
           sudo docker image rm viktoriakosh/foodgram_backend viktoriakosh/foodgram_frontend
           sudo docker compose pull backend frontend
           rm .env

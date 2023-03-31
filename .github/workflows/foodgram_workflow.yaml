@@ -32,7 +32,7 @@ jobs:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     needs: tests
-    if: github.ref_name == 'master'
+    if: github.ref == 'refs/heads/master'
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
@@ -58,6 +58,7 @@ jobs:
     name: Deploy on Yandex.Cloud
     runs-on: ubuntu-latest
     needs: build_and_push_to_docker_hub
+    if: github.ref == 'refs/heads/master'
     steps:
     - name: executing remote ssh commands to deploy
       uses: appleboy/ssh-action@master
@@ -68,7 +69,9 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker compose down
-          sudo docker compose rm web
+          sudo docker compose rm -f backend frontend
+          sudo docker image rm viktoriakosh/foodgram_backend viktoriakosh/foodgram_frontend
+          sudo docker compose pull backend frontend
           rm .env
           touch .env
           echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env

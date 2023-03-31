@@ -69,7 +69,7 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker compose down
-          sudo docker pull andyplo/foodgram_backend:latest
+          sudo docker pull viktoriakosh/foodgram_backend:latest
           sudo docker-compose rm -f backend
           rm .env
           touch .env

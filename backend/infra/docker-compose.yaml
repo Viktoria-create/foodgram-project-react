@@ -8,7 +8,6 @@ services:
     volumes:
       - ../frontend/:/app/result_build/
     #  - ./frontend:/app
-    #  - /mnt/c/ДИСК_D/Dev/foodgram-project-react/frontend:/app
 
   nginx:
     image: nginx:latest

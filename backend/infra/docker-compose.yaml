@@ -42,7 +42,7 @@ services:
 
   web:
     build:
-      context: /home/user/project/backend 
+      context: ../backend 
       dockerfile: Dockerfile
       args:
         - SECRET_KEY

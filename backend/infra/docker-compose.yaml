@@ -3,7 +3,7 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: /home/user/project/frontend
+      context: /home/user/app/frontend
       dockerfile: Dockerfile
     volumes:
     #  - ../frontend/:/app/result_build/

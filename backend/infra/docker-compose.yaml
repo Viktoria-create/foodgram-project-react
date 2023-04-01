@@ -31,7 +31,7 @@ services:
     image: postgres:latest
     restart: unless-stopped
     volumes:
-      - postgresql_volume:/var/lib/postgresql/data/:rw
+      - postgresql_volume:/var/lib/postgresql/data/
     env_file:
       - ./.env
     healthcheck:
@@ -48,10 +48,10 @@ services:
         - SECRET_KEY
     restart: always
     volumes:
-      - static_value:/app/static/:rw
-      - media_value:/app/media/:rw
-      - ../data/:/data/:ro
-      - ../backend/:/app/:rw
+      - static_value:/app/static/
+      - media_value:/app/media/
+      - ../data/:/data/
+      - ../backend/:/app/
     ports:
      - "8000:8000"
     depends_on:

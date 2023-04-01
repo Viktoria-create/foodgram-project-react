@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-    #  - ../frontend/:/app/result_build/
-      - ./frontend:/app
+      - ../frontend/:/app/result_build/
+    #  - ./frontend:/app
 
   nginx:
     image: nginx:latest
@@ -42,7 +42,7 @@ services:
 
   web:
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
       args:
         - SECRET_KEY

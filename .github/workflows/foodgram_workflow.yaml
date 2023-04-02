@@ -62,8 +62,8 @@ jobs:
         passphrase: ${{ secrets.PASSPHRASE }}
         script: |
           sudo docker-compose down
-          sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram_backend
-          sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend
+          sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
+          sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_frontend:latest
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_backend:latest
           rm .env

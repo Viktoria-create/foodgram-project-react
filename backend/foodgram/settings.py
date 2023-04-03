@@ -1,7 +1,6 @@
 import os
 import secrets
 import string
-# from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -17,7 +16,6 @@ if not SECRET_KEY:
 
 DEBUG = int(os.environ.get('DEBUG', default=0))
 
-# ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*'), '*']
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS',
                                default='51.250.20.77 localhost').split(" ")
 
@@ -73,6 +71,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
+
+SQLITE = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        'TIME_ZONE': 'UTC',
+    }
+}
 
 DATABASES = {
     'default': {

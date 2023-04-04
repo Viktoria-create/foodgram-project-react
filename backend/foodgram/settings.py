@@ -72,6 +72,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+SQLITE = {
+    'default': {
+        'ENGINE': ('django.db.backends.sqlite3'),
+        'NAME': (BASE_DIR, 'db.sqlite3'),
+        'TIME_ZONE': ('UTC'),
+    }
+}
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE',

@@ -1,26 +1,33 @@
 import csv
-from pathlib import Path
 
 from django.core.management.base import BaseCommand
-from foodgram.settings import BASE_DIR
-from recipes.models import Ingredient
 
-PROJECT_DIR = Path(BASE_DIR).resolve().joinpath('data')
-FILE_TO_OPEN = PROJECT_DIR / "ingredients.csv"
+from ingredients.models import Ingredient
 
 
 class Command(BaseCommand):
-    help = 'Заливка csv файлов'
+    help = 'Импорт данных из csv в модель Ingredient'
+
+    def add_arguments(self, parser):
+        parser.add_argument('--path', type=str, help='Путь к файлу')
 
     def handle(self, *args, **options):
-        # Парсинг ингридиентов
-        with open(FILE_TO_OPEN, encoding='utf-8') as file:
-            reader = csv.reader(file)
-            next(reader)
-            for row in reader:
-                status, created = Ingredient.objects.update_or_create(
-                    name=row[0],
-                    measurement_unit=row[1]
-                )
+        print('Заполнение модели Ingredient из csv запущено.')
+        file_path = options['path'] + 'ingredients.csv'
+        with open(file_path, 'r') as csv_file:
+            reader = csv.reader(csv_file)
 
-        print('Все ингридиенты загружены.')
+            for row in reader:
+                try:
+                    obj, created = Ingredient.objects.get_or_create(
+                        name=row[0],
+                        measurement_unit=row[1],
+                    )
+                    if not created:
+                        print(
+                            f'Ингредиент {obj} уже существует в базе данных.'
+                        )
+                except Exception as error:
+                    print(f'Ошибка в строке {row}: {error}')
+
+        print('Заполнение модели Ingredient завершено.')

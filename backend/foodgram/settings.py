@@ -74,11 +74,12 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 SQLITE = {
     'default': {
-        'ENGINE': ('django.db.backends.sqlite3'),
-        'NAME': (BASE_DIR, 'db.sqlite3'),
-        'TIME_ZONE': ('UTC'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TIME_ZONE': 'UTC',
     }
 }
+
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE',
@@ -86,8 +87,9 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', default='postgres'),
         'USER': os.getenv('POSTGRES_USER', default='postgres'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres'),
-        'HOST': os.getenv('DB_HOST', default='db'),
+        'HOST': os.getenv('DB_HOST', default='127.0.0.1'),
         'PORT': os.getenv('DB_PORT', default='5432'),
+        'OPTIONS': {'options': '-c timezone=UTC'}
     }
 }
 

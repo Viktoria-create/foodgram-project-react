@@ -30,8 +30,7 @@ class Command(BaseCommand):
                     )
                     if not created:
                         print(
-                            f'Ингредиент {obj} уже существует в базе данных.'
-                            )
+                            f'Ингредиент {obj} уже существует в базе данных.')
                 except Exception as error:
                     print(f'Ошибка в строке {row}: {error}')
 

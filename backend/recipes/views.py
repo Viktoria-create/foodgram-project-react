@@ -9,7 +9,6 @@ from rest_framework.response import Response
 
 # from django.shortcuts import render, redirect
 from .forms import RecipeForm
-
 from .filters import RecipeFilter
 from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart
 from .permissions import IsAuthorOrAdminPermission
@@ -142,7 +141,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return response
 
-    def add_recipe(request):
+    def add_recipe(self, request):
         if request.method == 'POST':
             form = RecipeForm(request.POST, request.FILES)
             if form.is_valid():

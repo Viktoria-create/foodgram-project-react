@@ -1,11 +1,14 @@
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+# from django.shortcuts import render, redirect
+from .forms import RecipeForm
 
 from .filters import RecipeFilter
 from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart
@@ -138,3 +141,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
         return response
+
+    def add_recipe(request):
+        if request.method == 'POST':
+            form = RecipeForm(request.POST, request.FILES)
+            if form.is_valid():
+                recipe = form.save(commit=False)
+                recipe.author = request.user
+                recipe.save()
+                form.save_m2m()
+                return redirect('recipe_detail', pk=recipe.pk)
+        else:
+            form = RecipeForm()
+        return render(request, 'add_recipe.html', {'form': form})

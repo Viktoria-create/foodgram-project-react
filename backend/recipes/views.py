@@ -7,7 +7,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .forms import RecipeForm
+# from .forms import RecipeForm
 from .filters import RecipeFilter
 from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart
 from .permissions import IsAuthorOrAdminPermission
@@ -142,7 +142,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def add_recipe(self, request):
         if request.method == 'POST':
-            form = RecipeForm(request.POST, request.FILES)
+            form = Recipe(request.POST, request.FILES)
             if form.is_valid():
                 recipe = form.save(commit=False)
                 recipe.author = request.user
@@ -150,5 +150,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 form.save_m2m()
                 return redirect('recipe_detail', pk=recipe.pk)
         else:
-            form = RecipeForm()
+            form = form()
         return render(request, 'add_recipe.html', {'form': form})

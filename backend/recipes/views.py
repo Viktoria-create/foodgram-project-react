@@ -7,7 +7,6 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-# from django.shortcuts import render, redirect
 from .forms import RecipeForm
 from .filters import RecipeFilter
 from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart

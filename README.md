@@ -152,7 +152,7 @@ docker compose exec backend python manage.py createsuperuser
 docker compose exec backend python manage.py collectstatic --no-input
 ```
 
-Теперь доступность проекта можно проверить по адресу [http://localhost/](http://localhost/admin/)
+Теперь доступность проекта можно проверить по адресу [http://localhost/](http://51.250.20.77/admin/)
 
 ---
 ## 5. Заполнение базы данных <a id=5></a>

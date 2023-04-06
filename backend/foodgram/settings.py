@@ -14,7 +14,7 @@ if not SECRET_KEY:
     SECRET_KEY = ''.join(secrets.choice(string.ascii_letters)
                          for _ in range(50))
 
-DEBUG = int(os.environ.get('DEBUG', default=0))
+DEBUG = True  # int(os.environ.get('DEBUG', default=0))
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS',
                                default='51.250.20.77 localhost').split(" ")
@@ -72,6 +72,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
+SQLITE = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'TIME_ZONE': 'UTC',
+    }
+}
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
@@ -83,7 +90,7 @@ DATABASES = {
     }
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+# DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

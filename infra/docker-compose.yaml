@@ -1,4 +1,5 @@
 version: "3.7"
+
 services:
   db:
     image: postgres:latest
@@ -13,14 +14,23 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
-    image: viktoriakosh/foodgram_backend
+  web:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+      args:
+        - DJANGO_SECRET_KEY
     restart: always
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
+      - ../data/:/data/
+      - ../backend/:/app/
+    ports:
+     - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - ./.env
 

@@ -14,18 +14,12 @@ services:
       timeout: 5s
       retries: 5
 
-  web:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-      args:
-        - DJANGO_SECRET_KEY
+  backend:
+    image: ${DOCKER_USERNAME}/foodgram-backend:latest
     restart: always
     volumes:
-      - static_value:/app/static/
-      - media_value:/app/media/
-      - ../data/:/data/
-      - ../backend/:/app/
+      - static_volume:/app/static/
+      - media_volume:/app/media/
     ports:
      - "8000:8000"
     depends_on:
@@ -34,12 +28,12 @@ services:
     env_file:
       - ./.env
 
-    frontend:
-      build:
-        context: ../frontend
-        dockerfile: Dockerfile
-      volumes:
-        - ../frontend/:/app/result_build/
+  frontend:
+    image: ${DOCKER_USERNAME}/foodgram-frontend:latest
+    volumes:
+      - frontend_volume:/app/result_build/build/
+    depends_on:
+      - backend
 
   nginx:
     image: nginx:1.21.3-alpine

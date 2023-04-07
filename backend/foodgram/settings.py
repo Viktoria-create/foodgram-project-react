@@ -93,7 +93,6 @@ DATABASES = {
 }
 
 DATABASES = SQLITE if LOCAL_DEV else DATABASES
-# DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

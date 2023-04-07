@@ -4,7 +4,7 @@ services:
     image: postgres:latest
     restart: unless-stopped
     volumes:
-      - postgresql_volue:/var/lib/postgresql/data/
+      - postgresql_value:/var/lib/postgresql/data/
     env_file:
       - ./.env
     healthcheck:

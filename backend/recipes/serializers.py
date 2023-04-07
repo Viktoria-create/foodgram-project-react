@@ -37,12 +37,12 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
     amount = serializers.IntegerField(
-        validators=(
-            MinValueValidator(
-                1,
-                message='Количество ингредиента должно быть 1 или более.'
-            ),
-        )
+        # validators=(
+        #    MinValueValidator(
+        #        1,
+        #        message='Количество ингредиента должно быть 1 или более.'
+        #    ),
+        # )
     )
 
     class Meta:
@@ -133,7 +133,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
+        # ingredients = validated_data.pop('ingredients')
+        print(validated_data)
+        print(self.initial_data['ingredients'])
+        ingredients = self.initial_data['ingredients']
 
         recipe = Recipe.objects.create(author=author, **validated_data)
         recipe.tags.set(tags)

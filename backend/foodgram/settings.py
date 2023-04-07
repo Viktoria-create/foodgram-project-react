@@ -80,7 +80,7 @@ SQLITE = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'TIME_ZONE': 'UTC',
     }
- }
+}
 DATABASES = {
     'default': {
         'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),

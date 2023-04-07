@@ -24,10 +24,12 @@ services:
     env_file:
       - ./.env
 
-  frontend:
-    image: viktoriakosh/foodgram_frontend
-    volumes:
-      - frontend_value:/app/build/
+    frontend:
+      build:
+        context: ../frontend
+        dockerfile: Dockerfile
+      volumes:
+        - ../frontend/:/app/result_build/
 
   nginx:
     image: nginx:1.21.3-alpine

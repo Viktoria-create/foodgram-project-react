@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 5
 
-  foodgram_backend:
+  backend:
     image: ${DOCKER_USERNAME}/foodgram_backend:latest
     restart: always
     volumes:
@@ -29,13 +29,12 @@ services:
     env_file:
       - ./.env
 
-  foodgram_frontend:
+  frontend:
     image: ${DOCKER_USERNAME}/foodgram_frontend:latest
-    restart: always
     volumes:
       - frontend_volume:/app/result_build/build/
     depends_on:
-      - "foodgram_backend"
+      - backend
 
   nginx:
     image: nginx:1.21.3-alpine
@@ -48,8 +47,8 @@ services:
       - static_volume:/var/html/static/
       - media_volume:/var/html/media/
     depends_on:
-      - "backend"
-      - "frontend"
+      - backend
+      - frontend
 
 volumes:
   postgresql_volume:

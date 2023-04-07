@@ -1,6 +1,6 @@
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404  # render, redirect
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
@@ -138,16 +138,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         )
 
         return response
-
-#    def add_recipe(self, request):
-#        if request.method == 'POST':
-#            form = Recipe(request.POST, request.FILES)
-#            if form.is_valid():
-#                recipe = form.save(commit=False)
-#                recipe.author = request.user
-#                recipe.save()
-#                form.save_m2m()
-#                return redirect('recipe_detail', pk=recipe.pk)
-#        else:
-#            form = form()
-#        return render(request, 'add_recipe.html', {'form': form})

@@ -16,6 +16,8 @@ if not SECRET_KEY:
 
 DEBUG = True  # int(os.environ.get('DEBUG', default=0))
 
+LOCAL_DEV = int(os.environ.get('LOCAL_DEV', default=0))
+
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS',
                                default='51.250.20.77 localhost').split(" ")
 
@@ -90,6 +92,7 @@ DATABASES = {
     }
 }
 
+DATABASES = SQLITE if LOCAL_DEV else DATABASES
 # DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 AUTH_PASSWORD_VALIDATORS = [

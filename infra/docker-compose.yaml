@@ -21,8 +21,11 @@ services:
     volumes:
       - static_volume:/app/static/
       - media_volume:/app/media/
+    ports:
+     - "8000:8000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - ./.env
 

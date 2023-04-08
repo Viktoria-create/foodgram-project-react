@@ -20,7 +20,7 @@ services:
     restart: always
     volumes:
       - static_volume:/app/static/
-      - media_volume:/app/media/
+      - media_value:/app/media/recipes/
     ports:
      - "8000:8000"
     depends_on:

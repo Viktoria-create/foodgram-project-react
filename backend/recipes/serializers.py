@@ -123,7 +123,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
+        author = self.context['request'].user
+        recipe = Recipe.objects.create(author=author, **validated_data)
         self.__create_update_recipe(recipe, ingredients, tags)
         return recipe
 
@@ -131,15 +132,19 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         ingredients = validated_data.pop('ingredients')
         instance = super().update(instance, validated_data)
-
         RecipeIngredients.objects.filter(
             recipe=instance,
             ingredient__in=instance.ingredients.all()
         ).delete()
-
         self.__create_update_recipe(instance, ingredients, tags)
         instance.save()
         return instance
+
+    def to_representation(self, instance):
+        RecipeSerializer(
+            instance,
+            context={'request': self.context.get('request')}
+        )
 
     class Meta:
         model = Recipe

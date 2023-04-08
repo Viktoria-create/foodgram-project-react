@@ -14,11 +14,12 @@ if not SECRET_KEY:
     SECRET_KEY = ''.join(secrets.choice(string.ascii_letters)
                          for _ in range(50))
 
-DEBUG = True  # int(os.environ.get('DEBUG', default=0))
+DEBUG = int(os.environ.get('DEBUG', default=0))
 
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS',
                                default='51.250.20.77 localhost').split(" ")
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',

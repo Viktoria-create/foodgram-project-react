@@ -36,17 +36,9 @@ class RecipeIngredientsSerializer(serializers.ModelSerializer):
 
 class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
-    amount = serializers.IntegerField(
-        # validators=(
-        #    MinValueValidator(
-        #        1,
-        #        message='Количество ингредиента должно быть 1 или более.'
-        #    ),
-        # )
-    )
 
     class Meta:
-        model = Ingredient
+        model = RecipeIngredients
         fields = ('id', 'amount')
 
 
@@ -155,7 +147,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         if tags is not None:
             instance.tags.set(tags)
 
-        ingredients = validated_data.pop('ingredients', None)
+        ingredients = self.initial_data['ingredients']
         if ingredients is not None:
             instance.ingredients.clear()
 

@@ -1,32 +1,40 @@
-version: '3.3'
+version: '3.9'
+
 services:
 
   db:
-    image: postgres:13.0-alpine
+    image: postgres:latest
+    restart: unless-stopped
     volumes:
-      - db_value:/var/lib/postgresql/data/
+      - postgresql_volume:/var/lib/postgresql/data/
     env_file:
       - ./.env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h ${DB_HOST} -p ${DB_PORT} -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   
   backend:
-      build:
-        context: ../backend
-        dockerfile: Dockerfile
-      restart: always
-      volumes:
-        - static_value:/app/static/
-        - media_value:/app/media/
-      depends_on:
-        - db
-      env_file:
-        - ./.env
+    image: viktoriakosh/foodgram_backend:latest
+    volumes:
+      - static_volume:/app/static/
+      - media_volume:/app/media/recipes/
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+    restart: always
 
   frontend:
-    image: viktoriakosh/foodgram_frontend
+    image: viktoriakosh/foodgram_frontend:latest
     volumes:
-      - ../frontend/:/app/result_build/
+      - frontend_volume:/app/result_build/build/
     depends_on:
       - backend
+      - frontend
+    env_file:
+      - ./.env
 
   nginx:
     image: nginx:1.19.3
@@ -36,13 +44,14 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/:/usr/share/nginx/html/api/docs/
-      - static_value:/var/html/static/
-      - media_value:/var/html/media/
+      - static_volume:/var/html/static/
+      - media_volume:/var/html/media/
     depends_on:
       - frontend
     restart: always
 
 volumes:
-  db_value:
-  static_value:
-  media_value:
+  postgresql_volume:
+  static_volume:
+  media_volume:
+  frontend_volume:

@@ -19,7 +19,7 @@ services:
     image: viktoriakosh/foodgram_backend:latest
     volumes:
       - static_volume:/app/static/
-      - media_volume:/app/media/recipes/
+      - media_volume:/app/media/
     depends_on:
       - db
     env_file:

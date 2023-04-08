@@ -124,43 +124,50 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         author = self.context.get('request').user
-        tags = validated_data.pop('tags')
-        ingredients = self.initial_data['ingredients']
+        tags_data = validated_data.pop('tags', [])
+        ingredients_data = (
+            self.context['request'].
+            data.get('ingredients', []
+                     )
+            )
 
         recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.tags.set(tags)
 
-        for ingredient in ingredients:
-            amount = ingredient['amount']
-            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
+        for tag_data in tags_data:
+            tag = get_object_or_404(Tag, pk=tag_data['id'])
+            recipe.tags.add(tag)
 
+        for ingredient_data in ingredients_data:
+            ingredient = (
+                get_object_or_404(
+                                  Ingredient, pk=ingredient_data['id']
+                )
+            )
             RecipeIngredients.objects.create(
                 recipe=recipe,
                 ingredient=ingredient,
-                amount=amount
+                amount=ingredient_data['amount']
             )
 
         return recipe
 
     def update(self, instance, validated_data):
-        tags = validated_data.pop('tags', None)
-        if tags is not None:
-            instance.tags.set(tags)
-
-        ingredients = self.initial_data['ingredients']
-        if ingredients is not None:
+        tags_data = validated_data.pop('tags', None)
+        if tags_data is not None:
+            instance.tags.set([tag_data['id'] for tag_data in tags_data])
+        ingredients_data = self.context['request'].data.get('ingredients', [])
+        if ingredients_data:
             instance.ingredients.clear()
-
-            for ingredient in ingredients:
-                amount = ingredient['amount']
-                ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
-
+            for ingredient_data in ingredients_data:
+                ingredient = (
+                    get_object_or_404(
+                        Ingredient, pk=ingredient_data['id']
+                    )
+                )
                 RecipeIngredients.objects.update_or_create(
                     recipe=instance,
                     ingredient=ingredient,
-                    defaults={'amount': amount}
-                )
-
+                    defaults={"amount": ingredient_data["amount"]})
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):

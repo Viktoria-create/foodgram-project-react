@@ -19,8 +19,8 @@ services:
     image: viktoriakosh/foodgram_backend
     restart: always
     volumes:
-      - static_volume:/app/static/
-      - media_volume:/app/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
     depends_on:
       - db
     env_file:

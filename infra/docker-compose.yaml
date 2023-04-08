@@ -47,7 +47,6 @@ services:
         - static_volume:/var/html/static/
         - media_volume:/var/html/media/
   depends_on:
-        - backend
         - frontend
 
 volumes:

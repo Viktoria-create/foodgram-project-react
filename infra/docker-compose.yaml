@@ -33,7 +33,6 @@ services:
       - frontend_volume:/app/result_build/build/
     depends_on:
       - backend
-      - frontend
     env_file:
       - ./.env
 

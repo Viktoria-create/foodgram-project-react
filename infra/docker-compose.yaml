@@ -32,9 +32,7 @@ services:
   frontend:
     image: viktoriakosh/foodgram_frontend:latest
     volumes:
-      - frontend_volume:/app/result_build/build/
-    depends_on:
-      - backend
+      - ./frontend/:/app/result_build/
 
   nginx:
     image: nginx:latest

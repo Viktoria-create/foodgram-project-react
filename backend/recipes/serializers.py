@@ -127,9 +127,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags', [])
         ingredients_data = (
             self.context['request'].
-            data.get('ingredients', []
-                     )
-            )
+            data.get('ingredients', []))
 
         recipe = Recipe.objects.create(author=author, **validated_data)
 
@@ -140,9 +138,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients_data:
             ingredient = (
                 get_object_or_404(
-                                  Ingredient, pk=ingredient_data['id']
-                )
-            )
+                                  Ingredient, pk=ingredient_data['id']))
             RecipeIngredients.objects.create(
                 recipe=recipe,
                 ingredient=ingredient,

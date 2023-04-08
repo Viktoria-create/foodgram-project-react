@@ -1,11 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
-from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import exceptions, serializers
 
 from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart
-from ingredients.models import Ingredient
 from tags.models import Tag
 from tags.serializers import TagSerializer
 from users.serializers import CustomUserSerializer
@@ -123,59 +121,25 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        author = self.context.get('request').user
-        tags_data = validated_data.pop('tags', [])
-        ingredients_data = (
-            self.context['request'].
-            data.get('ingredients', [])
-        )
-
-        recipe = Recipe.objects.create(author=author, **validated_data)
-
-        for tag_data in tags_data:
-            tag = get_object_or_404(Tag, pk=tag_data['id'])
-            recipe.tags.add(tag)
-
-        for ingredient_data in ingredients_data:
-            ingredient = (
-                get_object_or_404(
-                    Ingredient, pk=ingredient_data['id']
-                )
-            )
-            RecipeIngredients.objects.create(
-                recipe=recipe,
-                ingredient=ingredient,
-                amount=ingredient_data['amount']
-            )
-
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
+        self.__create_update_recipe(recipe, ingredients, tags)
         return recipe
 
     def update(self, instance, validated_data):
-        tags_data = validated_data.pop('tags', None)
-        if tags_data is not None:
-            instance.tags.set([tag_data['id'] for tag_data in tags_data])
-        ingredients_data = self.context['request'].data.get('ingredients', [])
-        if ingredients_data:
-            instance.ingredients.clear()
-            for ingredient_data in ingredients_data:
-                ingredient = (
-                    get_object_or_404(
-                        Ingredient, pk=ingredient_data['id']
-                    )
-                )
-                RecipeIngredients.objects.update_or_create(
-                    recipe=instance,
-                    ingredient=ingredient,
-                    defaults={"amount": ingredient_data["amount"]})
-        return super().update(instance, validated_data)
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        instance = super().update(instance, validated_data)
 
-    def to_representation(self, instance):
-        serializer = RecipeSerializer(
-            instance,
-            context={'request': self.context.get('request')}
-        )
+        RecipeIngredients.objects.filter(
+            recipe=instance,
+            ingredient__in=instance.ingredients.all()
+        ).delete()
 
-        return serializer.data
+        self.__create_update_recipe(instance, ingredients, tags)
+        instance.save()
+        return instance
 
     class Meta:
         model = Recipe

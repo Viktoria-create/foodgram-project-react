@@ -158,14 +158,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return instance
 
     def to_representation(self, instance):
-        RecipeSerializer(
-            instance,
-            context={'request': self.context.get('request')}
-        )
-
-    class Meta:
-        model = Recipe
-        exclude = ('pub_date',)
+        if instance is None:
+            return {}
+        return super().to_representation(instance)
 
 
 class ShortRecipeSerializer(serializers.ModelSerializer):

@@ -40,7 +40,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+        
     @action(detail=True, methods=['delete'])
     def remove_from_favorites(self, request, pk=None):
         user = self.request.user
@@ -52,6 +52,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
         favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['post', 'delete'])
+    def favorite(self, request, pk=None):
+        if request.method == 'POST':
+            return self.add_to_favorites(request, pk)
+        elif request.method == 'DELETE':
+            return self.remove_from_favorites(request, pk)
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     @action(detail=True, methods=('post', 'delete'))
     def shopping_cart(self, request, pk=None):

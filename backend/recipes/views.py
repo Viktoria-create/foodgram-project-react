@@ -40,7 +40,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe, context={'request': request}
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
     @action(detail=True, methods=['delete'])
     def remove_from_favorites(self, request, pk=None):
         user = self.request.user

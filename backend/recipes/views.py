@@ -12,7 +12,7 @@ from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart
 from .permissions import IsAuthorOrAdminPermission
 from .serializers import (RecipeCreateUpdateSerializer, RecipeSerializer,
                           ShortRecipeSerializer)
-from ingredients.models import Ingredient
+# from ingredients.models import Ingredient
 from users.pagination import CustomPageNumberPagination
 
 
@@ -29,41 +29,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return RecipeSerializer
 
-    @action(detail=True, methods=('post', 'delete'))
-    def favorite(self, request, pk=None):
+    @action(detail=True, methods=['post'])
+    def add_to_favorites(self, request, pk=None):
         user = self.request.user
         recipe = get_object_or_404(Recipe, pk=pk)
+        if Favorite.objects.filter(user=user, recipe=recipe).exists():
+            raise exceptions.ValidationError('Рецепт уже в избранном.')
+        Favorite.objects.create(user=user, recipe=recipe)
+        serializer = ShortRecipeSerializer(
+            recipe, context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        if self.request.method == 'POST':
-            if Favorite.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                raise exceptions.ValidationError('Рецепт уже в избранном.')
-
-            Favorite.objects.create(user=user, recipe=recipe)
-            serializer = ShortRecipeSerializer(
-                recipe,
-                context={'request': request}
+    @action(detail=True, methods=['delete'])
+    def remove_from_favorites(self, request, pk=None):
+        user = self.request.user
+        recipe = get_object_or_404(Recipe, pk=pk)
+        if not Favorite.objects.filter(user=user, recipe=recipe).exists():
+            raise exceptions.ValidationError(
+                'Рецепта нет в избранном, либо он уже удален.'
             )
-
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        if self.request.method == 'DELETE':
-            if not Favorite.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                raise exceptions.ValidationError(
-                    'Рецепта нет в избранном, либо он уже удален.'
-                )
-
-            favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
-            favorite.delete()
-
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        favorite = get_object_or_404(Favorite, user=user, recipe=recipe)
+        favorite.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=('post', 'delete'))
     def shopping_cart(self, request, pk=None):
@@ -113,28 +101,27 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def download_shopping_cart(self, request):
-        shopping_cart = ShoppingCart.objects.filter(user=self.request.user)
-        recipes = [item.recipe.id for item in shopping_cart]
+        shopping_cart = ShoppingCart.objects.filter(
+            user=self.request.user
+        ).prefetch_related('items__recipe__ingredients')
+        recipe_ids = [
+            item.recipe.id for cart in shopping_cart
+            for item in cart.items.all()
+        ]
         buy_list = RecipeIngredients.objects.filter(
-            recipe__in=recipes
+            recipe__id__in=recipe_ids
         ).values(
-            'ingredient'
-        ).annotate(
-            amount=Sum('amount')
-        )
-
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).annotate(total_amount=Sum('amount'))
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
         for item in buy_list:
-            ingredient = Ingredient.objects.get(pk=item['ingredient'])
-            amount = item['amount']
+            ingredient_name = item['ingredient__name']
+            measurement_unit = item['ingredient__measurement_unit']
+            total_amount = item['total_amount']
             buy_list_text += (
-                f'{ingredient.name}, {amount} '
-                f'{ingredient.measurement_unit}\n'
-            )
+                f'{ingredient_name}, {total_amount} {measurement_unit}\n')
 
-        response = HttpResponse(buy_list_text, content_type="text/plain")
-        response['Content-Disposition'] = (
-            'attachment; filename=shopping-list.txt'
-        )
-
-        return response
+        response = HttpResponse(buy_list_text, content_type='text/plain')
+        filename = 'shopping-list.txt'
+        content_disposition = 'attachment; filename={}'.format(filename)
+        response['Content-Disposition'] = content_disposition

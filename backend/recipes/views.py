@@ -110,26 +110,22 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def download_shopping_cart(self, request):
         shopping_cart = ShoppingCart.objects.filter(
-            user=self.request.user
-        ).prefetch_related('items__recipe__ingredients')
-        recipe_ids = [
-            item.recipe.id for cart in shopping_cart
-            for item in cart.items.all()
-        ]
+            user=self.request.user).prefetch_related('recipe')
+        recipe_ids = [item.recipe.id for item in shopping_cart]
         buy_list = RecipeIngredients.objects.filter(
-            recipe__id__in=recipe_ids
-        ).values(
-            'ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(total_amount=Sum('amount'))
+            recipe__in=recipe_ids).values('ingredient').annotate(
+            amount=Sum('amount')).select_related('ingredient')
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
-        for item in buy_list:
-            ingredient_name = item['ingredient__name']
-            measurement_unit = item['ingredient__measurement_unit']
-            total_amount = item['total_amount']
-            buy_list_text += (
-                f'{ingredient_name}, {total_amount} {measurement_unit}\n')
 
-        response = HttpResponse(buy_list_text, content_type='text/plain')
-        filename = 'shopping-list.txt'
-        content_disposition = 'attachment; filename={}'.format(filename)
-        response['Content-Disposition'] = content_disposition
+        for item in buy_list:
+            ingredient = item['ingredient']
+            amount = item['amount']
+            buy_list_text += (
+                f'{ingredient.name}, {amount} '
+                f'{ingredient.measurement_unit}\n'
+            )
+
+        response = HttpResponse(buy_list_text, content_type="text/plain")
+        response['Content-Disposition'] = (
+            'attachment; filename=shopping-list.txt')
+        return response

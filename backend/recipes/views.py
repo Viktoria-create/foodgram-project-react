@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .filters import RecipeFilter
-from .models import Favorite, Recipe, RecipeIngredients, ShoppingCart
+from .models import (Favorite, Recipe, RecipeIngredients,
+                     ShoppingCart, Ingredient)
 from .permissions import IsAuthorOrAdminPermission
 from .serializers import (RecipeCreateUpdateSerializer, RecipeSerializer,
                           ShortRecipeSerializer)
@@ -111,21 +112,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         shopping_cart = ShoppingCart.objects.filter(
             user=self.request.user).prefetch_related('recipe')
-        recipe_ids = [item.recipe.id for item in shopping_cart]
+        recipes = [item.recipe.id for item in shopping_cart]
         buy_list = RecipeIngredients.objects.filter(
-            recipe__in=recipe_ids).values('ingredient').annotate(
-            amount=Sum('amount')).select_related('ingredient')
+            recipe__in=recipes
+        ).values(
+            'ingredient'
+        ).annotate(
+            amount=Sum('amount')
+        )
         buy_list_text = 'Список покупок с сайта Foodgram:\n\n'
-
         for item in buy_list:
-            ingredient = item['ingredient']
+            ingredient = Ingredient.objects.get(pk=item['ingredient'])
             amount = item['amount']
             buy_list_text += (
                 f'{ingredient.name}, {amount} '
                 f'{ingredient.measurement_unit}\n'
             )
-
         response = HttpResponse(buy_list_text, content_type="text/plain")
         response['Content-Disposition'] = (
-            'attachment; filename=shopping-list.txt')
+            'attachment; filename=shopping-list.txt'
+        )
         return response

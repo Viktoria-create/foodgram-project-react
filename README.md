@@ -1,6 +1,6 @@
 ### praktikum_diplom
 
-![workflow](https://github.com/Viktoria-create/foodgram-project-react/actions/workflows/foodgram_workflow.yaml/badge.svg)
+![workflow](https://github.com/Viktoria-create/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
 
 ## Стек технологий
 
